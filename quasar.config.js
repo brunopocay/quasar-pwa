@@ -6,7 +6,6 @@ module.exports = configure(function (/* ctx */) {
     // outras configurações...
 
     build: {
-      publicPath: 'dist/pwa',
 
       extendWebpack(cfg) {
         // Encontrar a instância do HTMLWebpackPlugin no webpack config
