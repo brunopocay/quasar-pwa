@@ -41,6 +41,7 @@ export default {
           const videoBlob = new Blob(this.videoChunks, { type: 'video/webm' });
           this.$refs.recordedVideo.src = URL.createObjectURL(videoBlob);
           this.videoChunks = [];
+          this.downloadVideo(videoBlob);
         };
         this.mediaRecorder.start();
         this.isRecording = true;
@@ -54,6 +55,16 @@ export default {
         this.videoStream.getTracks().forEach(track => track.stop());
         this.isRecording = false;
       }
+    },
+    downloadVideo(videoBlob) {
+      const url = URL.createObjectURL(videoBlob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'video.webm';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
     },
     async startRecording() {
       try {
