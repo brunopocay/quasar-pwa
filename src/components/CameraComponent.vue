@@ -20,7 +20,7 @@
         video.value.srcObject = stream;
       }
     } catch (error) {
-      console.error('Erro ao acessar a câmera: ', error);
+      console.error('Erro ao acessar a câmeraa: ', error);
     }
   }
   
