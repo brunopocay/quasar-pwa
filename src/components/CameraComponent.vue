@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <q-btn @click="startRecordingVideo">Gravar Vídeo</q-btn>
     <q-btn @click="stopRecordingVideo" :disabled="!isRecording">Parar Gravação</q-btn>
     <video ref="video" autoplay></video>
@@ -11,89 +11,121 @@
     <ul>
       <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
     </ul>
+  </div> -->
+  <div>
+    <q-btn color="primary" label="Get Picture" @click="captureImage" />
+
+    <img :src="imageSrc">
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
+import { Camera, CameraResultType } from '@capacitor/camera'
 export default {
-  data() {
-    return {
-      mediaRecorder: null,
-      audioChunks: [],
-      videoChunks: [],
-      videoStream: null,
-      isRecording: false,
-      selectedFiles: []
-    };
-  },
+  // data() {
+  //   return {
+  //     mediaRecorder: null,
+  //     audioChunks: [],
+  //     videoChunks: [],
+  //     videoStream: null,
+  //     isRecording: false,
+  //     selectedFiles: []
+  //   };
+  // },
   methods: {
-    async startRecordingVideo() {
-      try {
-        this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        this.$refs.video.srcObject = this.videoStream;
-        this.mediaRecorder = new MediaRecorder(this.videoStream);
-        this.mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            this.videoChunks.push(event.data);
-          }
-        };
-        this.mediaRecorder.onstop = () => {
-          const videoBlob = new Blob(this.videoChunks, { type: 'video/webm' });
-          this.$refs.recordedVideo.src = URL.createObjectURL(videoBlob);
-          this.videoChunks = [];
-          this.downloadVideo(videoBlob);
-        };
-        this.mediaRecorder.start();
-        this.isRecording = true;
-      } catch (error) {
-        console.error("Erro ao iniciar a gravação de vídeo:", error);
+    // async startRecordingVideo() {
+    //   try {
+    //     this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    //     this.$refs.video.srcObject = this.videoStream;
+    //     this.mediaRecorder = new MediaRecorder(this.videoStream);
+    //     this.mediaRecorder.ondataavailable = (event) => {
+    //       if (event.data.size > 0) {
+    //         this.videoChunks.push(event.data);
+    //       }
+    //     };
+    //     this.mediaRecorder.onstop = () => {
+    //       const videoBlob = new Blob(this.videoChunks, { type: 'video/webm' });
+    //       this.$refs.recordedVideo.src = URL.createObjectURL(videoBlob);
+    //       this.videoChunks = [];
+    //       this.downloadVideo(videoBlob);
+    //     };
+    //     this.mediaRecorder.start();
+    //     this.isRecording = true;
+    //   } catch (error) {
+    //     console.error("Erro ao iniciar a gravação de vídeo:", error);
+    //   }
+    // },
+    // stopRecordingVideo() {
+    //   if (this.mediaRecorder) {
+    //     this.mediaRecorder.stop();
+    //     this.videoStream.getTracks().forEach(track => track.stop());
+    //     this.isRecording = false;
+    //   }
+    // },
+    // downloadVideo(videoBlob) {
+    //   const url = URL.createObjectURL(videoBlob);
+    //   const a = document.createElement('a');
+    //   a.style.display = 'none';
+    //   a.href = url;
+    //   a.download = 'video.webm';
+    //   document.body.appendChild(a);
+    //   a.click();
+    //   window.URL.revokeObjectURL(url);
+    // },
+    // async startRecording() {
+    //   try {
+    //     const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //     this.mediaRecorder = new MediaRecorder(audioStream);
+    //     this.mediaRecorder.ondataavailable = (event) => {
+    //       if (event.data.size > 0) {
+    //         this.audioChunks.push(event.data);
+    //       }
+    //     };
+    //     this.mediaRecorder.onstop = () => {
+    //       const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+    //       this.$refs.audio.src = URL.createObjectURL(audioBlob);
+    //       this.audioChunks = [];
+    //     };
+    //     this.mediaRecorder.start();
+    //   } catch (error) {
+    //     console.error("Erro ao gravar áudio:", error);
+    //   }
+    // },
+    // uploadFile() {
+    //   this.$refs.fileInput.click();
+    // },
+    // handleFileUpload(event) {
+    //   const files = event.target.files;
+    //   if (files.length > 0) {
+    //     this.selectedFiles = Array.from(files);
+    //     console.log("Arquivos selecionados:", this.selectedFiles);
+    //     // Aqui você pode implementar o upload dos arquivos para o servidor ou outra lógica necessária
+    //   }
+    // }
+
+
+  
+    setup () {
+      const imageSrc = ref('')
+
+      async function captureImage () {
+        const image = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: true,
+          resultType: CameraResultType.Uri
+        })
+
+        // The result will vary on the value of the resultType option.
+        // CameraResultType.Uri - Get the result from image.webPath
+        // CameraResultType.Base64 - Get the result from image.base64String
+        // CameraResultType.DataUrl - Get the result from image.dataUrl
+        imageSrc.value = image.webPath
       }
-    },
-    stopRecordingVideo() {
-      if (this.mediaRecorder) {
-        this.mediaRecorder.stop();
-        this.videoStream.getTracks().forEach(track => track.stop());
-        this.isRecording = false;
-      }
-    },
-    downloadVideo(videoBlob) {
-      const url = URL.createObjectURL(videoBlob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'video.webm';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    },
-    async startRecording() {
-      try {
-        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        this.mediaRecorder = new MediaRecorder(audioStream);
-        this.mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            this.audioChunks.push(event.data);
-          }
-        };
-        this.mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-          this.$refs.audio.src = URL.createObjectURL(audioBlob);
-          this.audioChunks = [];
-        };
-        this.mediaRecorder.start();
-      } catch (error) {
-        console.error("Erro ao gravar áudio:", error);
-      }
-    },
-    uploadFile() {
-      this.$refs.fileInput.click();
-    },
-    handleFileUpload(event) {
-      const files = event.target.files;
-      if (files.length > 0) {
-        this.selectedFiles = Array.from(files);
-        console.log("Arquivos selecionados:", this.selectedFiles);
-        // Aqui você pode implementar o upload dos arquivos para o servidor ou outra lógica necessária
+
+      return {
+        imageSrc,
+        captureImage
       }
     }
   }
