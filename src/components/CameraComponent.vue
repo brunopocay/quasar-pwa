@@ -6,17 +6,17 @@
     <video ref="recordedVideo" controls></video>
     <q-btn @click="startRecording">Gravar Áudio</q-btn>
     <audio ref="audio" controls></audio>
-    <q-btn @click="uploadFile">Upload arquivos sistema</q-btn>
-    <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
-    <ul>
-      <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
-    </ul>
+  
   </div> -->
   <div>
     <q-btn color="primary" label="Get Picture" @click="captureImage" />
-
     <img :src="imageSrc">
   </div>
+  <q-btn @click="uploadFile">Upload arquivos sistema</q-btn>
+    <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
+    <ul>
+      <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
+  </ul>
 </template>
 
 <script>
@@ -92,20 +92,19 @@ export default {
     //     console.error("Erro ao gravar áudio:", error);
     //   }
     // },
-    // uploadFile() {
-    //   this.$refs.fileInput.click();
-    // },
-    // handleFileUpload(event) {
-    //   const files = event.target.files;
-    //   if (files.length > 0) {
-    //     this.selectedFiles = Array.from(files);
-    //     console.log("Arquivos selecionados:", this.selectedFiles);
-    //     // Aqui você pode implementar o upload dos arquivos para o servidor ou outra lógica necessária
-    //   }
-    // }
+    uploadFile() {
+      this.$refs.fileInput.click();
+    },
 
+    handleFileUpload(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        this.selectedFiles = Array.from(files);
+        console.log("Arquivos selecionados:", this.selectedFiles);
+        // Aqui você pode implementar o upload dos arquivos para o servidor ou outra lógica necessária
+      }
+    },
 
-  
     setup () {
       const imageSrc = ref('')
 
